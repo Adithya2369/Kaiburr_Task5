@@ -46,7 +46,9 @@ Since it was too large for local or Colab training, I extracted and filtered onl
 - Consumer Loan  
 - Mortgage  
 
-Initially, a small subset of **~10,000 rows** was used for training and evaluation.
+Initially, a small subset of **~10,000 rows** was used for training and evaluation.\
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/filters.png" width="25%">
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/df_head.png" width="65%">
 
 ---
 
@@ -54,17 +56,27 @@ Initially, a small subset of **~10,000 rows** was used for training and evaluati
 
 ### 🔹 Phase 1 — Traditional Naive Bayes Model
 I started in a traditional way by training a **Multinomial Naive Bayes** model using the dataset extracted from the given web source.  
-The model achieved a **high accuracy (~90%)**, but when tested with **custom complaint samples**, it always predicted  
+The model achieved a **high accuracy (~94.4%)**, but when tested with **custom complaint samples**, it always predicted  
 > “Credit reporting, repair, or other”
+
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/evaluation_tradional.png" width="50%">
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/test_traditional.png" width="50%">
 
 This revealed that the dataset was **imbalanced**, having a much larger number of entries belonging to the *Credit reporting* category.
 
 ---
 
 ### 🔹 Phase 2 — Handling Class Imbalance
-To address this imbalance, we applied **Random Under Sampling** using the `imblearn` library.  
+To address this imbalance, I applied **Random Under Sampling** using the `imblearn` library. 
+
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/imbalanced.png" width="50%">
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/balanced.png" width="50%">
+
 The dataset was balanced and the Naive Bayes model retrained.  
 However, this time, **accuracy dropped significantly**, indicating that the reduced sample size affected learning performance.
+
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/evaluation_small_DS.png" width="50%">
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/test_small_DS.png" width="50%">
 
 ---
 
@@ -73,12 +85,43 @@ I then **increased the dataset size** from around **278 records per class** to *
 A new Naive Bayes model was trained again.  
 The accuracy improved but was **still below expectations**, suggesting the model’s limitation with complex textual data.
 
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/evaluation_large_DS.png" width="50%">
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/test_small_DS.png" width="50%">
+
 ---
 
 ### 🔹 Phase 4 — Final XGBoost Model
 To overcome this, I replaced Naive Bayes with a stronger model — **XGBoost**.  
 Using the **balanced dataset (25,000 per category)**, XGBoost was trained and fine-tuned, finally achieving an accuracy of **~93%**.  
 This marked a significant improvement in classification performance and stability.
+
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/evaluation_XGBoost.png" width="50%">
+<img src="https://github.com/Adithya2369/Kaiburr_Task5/blob/cdbaf711bd29131d0774057b93cf7b41233363ff/pics/test_XGBoost.png" width="50%">
+
+---
+
+## 🧠 Process Summary
+The workflow followed for this project involved several key data science steps:
+### 1. Data Loading & Cleaning:
+Imported the filtered Consumer Complaint Database and retained only relevant categories. Removed missing complaint texts and normalized the data for consistency.
+
+### 2. Text Preprocessing:
+   - Converted all text to lowercase
+   - Removed punctuation, numbers, and stopwords
+
+### 3. Feature Engineering:
+Transformed the cleaned complaint narratives into numerical vectors using TF-IDF vectorization with a vocabulary size of 5000 features.
+
+### 4.Train-Test Split:
+Divided the dataset into 80% training and 20% testing subsets to evaluate model generalization.
+
+### 5. Model Training & Evaluation:
+   - Trained a baseline Naive Bayes classifier and analyzed results.
+   - Experimented with undersampling to handle class imbalance.
+   - Implemented XGBoost, which achieved the best performance (~93% accuracy).
+
+### 6. Model Saving:
+Exported both the model and vectorizer using joblib for future predictions and deployment.
 
 ---
 
@@ -94,8 +137,11 @@ This marked a significant improvement in classification performance and stabilit
 |------|--------------|
 | `Task5_Kaiburr_evaluation.ipynb` | Full experiment notebook — includes all model versions (Naive Bayes, undersampling, and XGBoost) with explanations and evaluations. |
 | `Task5_Kaiburr.ipynb` | Final production-ready notebook using XGBoost with the best results (~93% accuracy). |
-| `complaint_model.pkl` | Saved XGBoost model (final). |
-| `tfidf_vectorizer.pkl` | Saved TF-IDF vectorizer. |
+| `complaint_model.pkl` | Saved Naive Bayes model for baseline comparison. |
+| `tfidf_vectorizer.pkl` | TF-IDF vectorizer used for the Naive Bayes model. |
+| `xgboost_complaint_model.pkl` | Saved XGBoost model — final version. |
+| `xgboost_tfidf_vectorizer.pkl` | TF-IDF vectorizer corresponding to the XGBoost model. |
+| `pics\` | Folder containing screenshots of outputs, model evaluations, and proof of work (with name and timestamp). |
 | `README.md` | Documentation file (this one). |
 
 ---
@@ -104,7 +150,7 @@ This marked a significant improvement in classification performance and stabilit
 1. Clone the repository:  
 ```bash
 git clone https://github.com/Adithya2369/Kaiburr_Task5.git
-cd kaiburr-task5-text-classification
+cd kaiburr-task5
 ```
 
 2. Open either notebook in **Google Colab** or **Jupyter**:
